@@ -17,14 +17,15 @@ class Router
     {
         $routes = [];
         foreach ($serverlessConfig['functions'] as $function) {
-            $pattern = $function['events'][0]['httpApi'] ?? null;
+            $patternA = $function['events'][0]['httpApi'] ?? null;
+            $patternB = $function['events'][0]['http'] ?? null;
 
-            if (! $pattern) {
-                continue;
+
+            if (is_array($patternA)) {
+                $pattern = self::patternToString($patternA);
             }
-
-            if (is_array($pattern)) {
-                $pattern = self::patternToString($pattern);
+            if (is_array($patternB)) {
+                $pattern = self::patternToString($patternB);
             }
 
             $routes[$pattern] = $function['handler'];
