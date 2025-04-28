@@ -2,11 +2,15 @@
 
 namespace Bref\DevServer;
 
+use Aws\Arn\Arn;
 use Bref\Bref;
+use Bref\Context\Context;
+use Nyholm\Psr7\Request;
 use Nyholm\Psr7\Factory\Psr17Factory;
 use Nyholm\Psr7Server\ServerRequestCreator;
 use Psr\Http\Message\ServerRequestInterface;
 use RuntimeException;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Yaml\Yaml;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -43,8 +47,9 @@ class Handler
 
         $request = $this->requestFromGlobals();
         [$handler, $request] = $router->match($request);
-        $controller = $handler ? $container->get($handler) : new NotFound;
-        $response = $controller->handle($request);
+
+        $controller = $handler ? $container->get($handler) : new NotFound ();
+        $response = $controller->handle($request, new Context(Ulid::generate(), 29*1000, 'dev', Ulid::generate()));
         (new ResponseEmitter)->emit($response);
 
         return null;

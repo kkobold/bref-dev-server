@@ -10,9 +10,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 /**
  * @internal
  */
-class NotFound implements RequestHandlerInterface
+class NotFound
 {
-    public function handle(ServerRequestInterface $request): ResponseInterface
+    public function handle( $request): Response
     {
         $url = $request->getUri()->getPath();
 

@@ -3,23 +3,23 @@
 namespace Bref\DevServer;
 
 
-use Illuminate\Http\JsonResponse;
+use Nyholm\Psr7\Response;
 
 /**
  * @internal
  */
 class ResponseEmitter
 {
-    public function emit(JsonResponse $response): void
+    public function emit(Response $response): void
     {
         $this->emitHeaders($response);
         $this->emitStatusLine($response);
-        echo $response->getData();
+        echo $response->getBody();
     }
 
-    private function emitStatusLine(JsonResponse $response): void
+    private function emitStatusLine(Response $response): void
     {
-        $reasonPhrase = $response->statusText();
+        $reasonPhrase = $response->getReasonPhrase();
         $statusCode = $response->getStatusCode();
 
         header(sprintf(
@@ -30,12 +30,12 @@ class ResponseEmitter
         ), true, $statusCode);
     }
 
-    private function emitHeaders(JsonResponse $response): void
+    private function emitHeaders(Response $response): void
     {
         $statusCode = $response->getStatusCode();
 
 
-        foreach ($response->headers as $header => $values) {
+        foreach ($response->getHeaders() as $header => $values) {
             $name = $this->filterHeader($header);
             $first = $name !== 'Set-Cookie';
             foreach ($values as $value) {
